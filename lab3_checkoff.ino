@@ -23,6 +23,8 @@ void setup()
 
   pinMode(PUSH2, INPUT_PULLUP);
   attachInterrupt(PUSH2, blink, FALLING);
+
+  delay(1000);
 }
 
 void loop()
@@ -32,10 +34,7 @@ void loop()
       digitalWrite(GREEN_LED, state); //LED starts OFFn
       if(flag)
       {
-
         flag = LOW;
-        int sensorValue = analogRead(A3);
-        Serial.println(sensorValue);
         storeData();
         delay(500);
         count++;
@@ -43,8 +42,7 @@ void loop()
   }
   if (enable_flag and !mode_flag)
   {
-      int sensorValue = analogRead(A3);
-      Serial.println(sensorValue);
+
       storeData();
       delay(500);
       count++;
@@ -115,12 +113,13 @@ void loop()
   else if (inputString == "display\n")
     {
       Serial.println("calling display...");
+      printData();
     }
   else if (inputString == "erase\n")
     {
       Serial.println("calling erase...");
       count = 0;
-      for (int i = 0; i < 21; i++)
+      for (int i = 0; i < 20; i++)
       {
           myArray[i] = 0;
       } 
@@ -129,6 +128,7 @@ void loop()
   else if (inputString == "stats\n")
     {
       Serial.println("calling stats...");
+      statData();
     }
   else
   {
@@ -165,26 +165,71 @@ void blink()
 
 void storeData()
 {
-  Serial.println("function called.");
-  
+  //Serial.println("function called.");
+
   if (count < 20)
   {
     myArray[count] = analogRead(A3);
+    Serial.println(myArray[count]);
   }
   else
   {
-    for (int i = 0; i < 21; i++)
+    for (int i = 0; i < 20; i++)
     {
       if (i == 20)
       {
         myArray[20] = analogRead(A3);
-        Serial.println("overwriting an array\n");
+        //Serial.println("overwriting an array\n");
       }
       else
       {
         myArray[i] = myArray[i+1];
-        Serial.println("shifting to array\n");
+        //Serial.println("shifting to array\n");
       }
     } 
   }
 }
+
+void printData()
+{
+      for (int i = 0; i < 20; i++)
+      {
+          Serial.println(myArray[i]);
+      } 
+}
+
+
+void statData()
+{
+  int maxVal = 0;
+  int minVal = 0;
+  int mean = 0;
+  for (int i = 0; i < 20; i++)
+  {
+    if (i == 0)
+    {
+      maxVal = myArray[i];
+      minVal = myArray[i];
+    }
+    if (maxVal < myArray[i])
+    {
+      maxVal = myArray[i];
+    }
+    if (minVal > myArray[i])
+    {
+      minVal = myArray[i];
+    }
+    mean = mean + myArray[i];
+  } 
+    mean = mean/20;
+
+  Serial.print("Max Value:    ");
+  Serial.print(maxVal);
+  Serial.print("\nMin Value:    ");
+  Serial.print(minVal);
+  Serial.print("\nMean Value:   ");
+  Serial.print(mean);
+  
+  
+}
+
