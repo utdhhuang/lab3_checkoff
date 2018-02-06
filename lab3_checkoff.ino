@@ -1,7 +1,6 @@
 volatile int state = LOW;
 volatile int flag = HIGH;
 
-int SIZE = 20;
 
 String inputString = "";
 boolean stringComplete = false;
@@ -37,6 +36,7 @@ void loop()
         flag = LOW;
         int sensorValue = analogRead(A3);
         Serial.println(sensorValue);
+        storeData();
         delay(500);
         count++;
       }
@@ -45,7 +45,9 @@ void loop()
   {
       int sensorValue = analogRead(A3);
       Serial.println(sensorValue);
+      storeData();
       delay(500);
+      count++;
   }
   if (stringComplete)
   {
@@ -118,6 +120,11 @@ void loop()
     {
       Serial.println("calling erase...");
       count = 0;
+      for (int i = 0; i < 21; i++)
+      {
+          myArray[i] = 0;
+      } 
+      
     }
   else if (inputString == "stats\n")
     {
@@ -158,23 +165,26 @@ void blink()
 
 void storeData()
 {
-  if (count < SIZE)
+  Serial.println("function called.");
+  
+  if (count < 20)
   {
     myArray[count] = analogRead(A3);
   }
   else
   {
-    for (int i = 0; i < SIZE; i++)
+    for (int i = 0; i < 21; i++)
     {
-      if (i == SIZE)
+      if (i == 20)
       {
-        myArray[SIZE] = analogRead(A3);
+        myArray[20] = analogRead(A3);
+        Serial.println("overwriting an array\n");
       }
       else
       {
         myArray[i] = myArray[i+1];
+        Serial.println("shifting to array\n");
       }
     } 
-  }
   }
 }
