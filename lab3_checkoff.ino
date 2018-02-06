@@ -1,6 +1,7 @@
 volatile int state = LOW;
 volatile int flag = HIGH;
 
+int SIZE = 20;
 
 String inputString = "";
 boolean stringComplete = false;
@@ -9,8 +10,7 @@ boolean mode_flag = 1;
 
 
 int myArray[20];
-int myTimeArray[20];
-float myVoltageArray[20];
+
 int count = 0;
 int storedVals = 0;
  
@@ -30,15 +30,16 @@ void loop()
 {
     if (enable_flag and mode_flag)
   {
-      digitalWrite(GREEN_LED, state); //LED starts OFF
-      if(flag) {
-      count++;
-      Serial.println(count);
-      flag = LOW;
-      int sensorValue = analogRead(A3);
-      Serial.println(sensorValue);
-      delay(500);
-  }
+      digitalWrite(GREEN_LED, state); //LED starts OFFn
+      if(flag)
+      {
+
+        flag = LOW;
+        int sensorValue = analogRead(A3);
+        Serial.println(sensorValue);
+        delay(500);
+        count++;
+      }
   }
   if (enable_flag and !mode_flag)
   {
@@ -116,6 +117,7 @@ void loop()
   else if (inputString == "erase\n")
     {
       Serial.println("calling erase...");
+      count = 0;
     }
   else if (inputString == "stats\n")
     {
@@ -154,4 +156,25 @@ void blink()
 }
 
 
-
+void storeData()
+{
+  if (count < SIZE)
+  {
+    myArray[count] = analogRead(A3);
+  }
+  else
+  {
+    for (int i = 0; i < SIZE; i++)
+    {
+      if (i == SIZE)
+      {
+        myArray[SIZE] = analogRead(A3);
+      }
+      else
+      {
+        myArray[i] = myArray[i+1];
+      }
+    } 
+  }
+  }
+}
