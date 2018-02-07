@@ -1,5 +1,5 @@
 volatile int state = LOW;
-volatile int flag = HIGH;
+volatile int flag = LOW;
 
 
 String inputString = "";
@@ -123,7 +123,6 @@ void loop()
       {
           myArray[i] = 0;
       } 
-      
     }
   else if (inputString == "stats\n")
     {
@@ -136,10 +135,7 @@ void loop()
   }
     inputString = "";
     stringComplete = false;
-    
   }
-
-
 }
 
 void serialEvent()
@@ -166,7 +162,6 @@ void blink()
 void storeData()
 {
   //Serial.println("function called.");
-
   if (count < 20)
   {
     myArray[count] = analogRead(A3);
@@ -176,15 +171,15 @@ void storeData()
   {
     for (int i = 0; i < 20; i++)
     {
-      if (i == 20)
+      if (i == 19)
       {
-        myArray[20] = analogRead(A3);
-        //Serial.println("overwriting an array\n");
+        myArray[19] = analogRead(A3);
+        Serial.println("overwriting an array\n");
       }
       else
       {
         myArray[i] = myArray[i+1];
-        //Serial.println("shifting to array\n");
+        Serial.println("shifting to array\n");
       }
     } 
   }
@@ -201,15 +196,17 @@ void printData()
 
 void statData()
 {
-  int maxVal = 0;
-  int minVal = 0;
-  int mean = 0;
+  int maxVal    = 0;
+  int minVal    = 0;
+  int minValNZ  = 0;
+  unsigned int mean = 0;
   for (int i = 0; i < 20; i++)
   {
     if (i == 0)
     {
       maxVal = myArray[i];
       minVal = myArray[i];
+      minValNZ = minVal;
     }
     if (maxVal < myArray[i])
     {
@@ -217,19 +214,24 @@ void statData()
     }
     if (minVal > myArray[i])
     {
+      if (myArray[i] != 0)
+      {
+        minValNZ = myArray[i];
+      }
       minVal = myArray[i];
     }
-    mean = mean + myArray[i];
+    mean = mean+myArray[i];
   } 
     mean = mean/20;
 
-  Serial.print("Max Value:    ");
+  Serial.print("Max Value:        ");
   Serial.print(maxVal);
-  Serial.print("\nMin Value:    ");
+  Serial.print("\nMin NonZero Val:  ");
+  Serial.print(minValNZ);
+  Serial.print("\nMin Value:        ");
   Serial.print(minVal);
-  Serial.print("\nMean Value:   ");
+  Serial.print("\nMean Value:       ");
   Serial.print(mean);
-  
-  
-}
+  Serial.println();
+ }
 
